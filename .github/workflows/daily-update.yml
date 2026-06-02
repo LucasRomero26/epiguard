@@ -1,0 +1,67 @@
+
+
+# Schedule: 06:00 UTC daily = 01:00 Colombia time.
+
+name: Daily Predictions Update
+
+on:
+  schedule:
+    # Cron: minute hour day month day-of-week
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  refresh-predictions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger Supabase daily-update Edge Function
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+
+          echo "Calling daily-update at $SUPABASE_URL/functions/v1/daily-update"
+
+          # Call with retries: HF Space may be cold-starting after 48h sleep.
+          # First attempt may take 30-60s for the Space to wake up.
+          RESPONSE=$(curl -sS -X POST \
+            "$SUPABASE_URL/functions/v1/daily-update" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            --data '{}' \
+            --max-time 240 \
+            --retry 2 \
+            --retry-delay 30 \
+            --retry-all-errors \
+            -w "\n__HTTP_STATUS__:%{http_code}")
+
+          # Split body and status
+          HTTP_STATUS=$(echo "$RESPONSE" | grep -o '__HTTP_STATUS__:[0-9]*$' | cut -d: -f2)
+          BODY=$(echo "$RESPONSE" | sed 's/__HTTP_STATUS__:[0-9]*$//')
+
+          echo "HTTP status: $HTTP_STATUS"
+          echo "Response body:"
+          echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+
+          # Fail the job if status is not 200, or if status field is "error"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Edge function returned HTTP $HTTP_STATUS"
+            exit 1
+          fi
+
+          STATUS=$(echo "$BODY" | jq -r '.status // "unknown"')
+          if [ "$STATUS" = "error" ]; then
+            echo "::error::Edge function reported status=error"
+            exit 1
+          fi
+
+          # Warn (don't fail) if some departments failed
+          FAILED=$(echo "$BODY" | jq -r '.failed_predictions // 0')
+          if [ "$FAILED" != "0" ]; then
+            echo "::warning::$FAILED department(s) failed during this run"
+          fi
+
+          echo "Daily update completed successfully."

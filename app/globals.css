@@ -1,0 +1,231 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode — off-white with deep blue accent */
+    --background: 216 33% 97%;
+    --foreground: 220 40% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 13%;
+    --primary: 200 92% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 220 40% 13%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 20% 40%;
+    --accent: 200 92% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 55%;
+    --border: 214 30% 82%;
+    --input: 214 30% 82%;
+    --ring: 200 92% 40%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark mode — deep navy with cyan accent */
+    --background: 222 50% 6%;
+    --foreground: 210 35% 96%;
+    --card: 222 42% 9%;
+    --card-foreground: 210 35% 96%;
+    --popover: 222 42% 11%;
+    --popover-foreground: 210 35% 96%;
+    --primary: 186 90% 43%;
+    --primary-foreground: 222 50% 6%;
+    --secondary: 222 35% 14%;
+    --secondary-foreground: 210 35% 96%;
+    --muted: 222 35% 14%;
+    --muted-foreground: 215 18% 52%;
+    --accent: 186 90% 43%;
+    --accent-foreground: 222 50% 6%;
+    --destructive: 0 70% 55%;
+    --border: 222 35% 17%;
+    --input: 222 35% 17%;
+    --ring: 186 90% 43%;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    @apply scroll-smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    line-height: 1.6;
+  }
+
+  /* Prevent flash — html tag gets class="dark" server-side */
+  html.dark {
+    color-scheme: dark;
+  }
+}
+
+@layer utilities {
+  /* ── Glass surfaces ─────────────────────────────────────────── */
+
+  .glass {
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    background-color: rgb(255 255 255 / 0.07);
+    border: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  .dark .glass {
+    background-color: rgb(255 255 255 / 0.04);
+    border-color: rgb(255 255 255 / 0.08);
+  }
+
+  .glass-card {
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    background-color: rgb(255 255 255 / 0.82);
+    border: 1px solid rgb(255 255 255 / 0.55);
+    box-shadow:
+      0 4px 24px rgb(0 0 0 / 0.06),
+      0 1px 2px rgb(0 0 0 / 0.04),
+      inset 0 1px 0 rgb(255 255 255 / 0.8);
+  }
+
+  .dark .glass-card {
+    background-color: rgb(15 22 41 / 0.65);
+    border-color: rgb(255 255 255 / 0.08);
+    box-shadow:
+      0 4px 24px rgb(0 0 0 / 0.35),
+      0 1px 2px rgb(0 0 0 / 0.2),
+      inset 0 1px 0 rgb(255 255 255 / 0.04);
+  }
+
+  .glass-nav {
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    background-color: rgb(247 249 252 / 0.85);
+    border-bottom: 1px solid rgb(0 0 0 / 0.07);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.9), 0 2px 8px rgb(0 0 0 / 0.06);
+  }
+
+  .dark .glass-nav {
+    background-color: rgb(8 12 26 / 0.88);
+    border-bottom-color: rgb(255 255 255 / 0.07);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.03), 0 2px 8px rgb(0 0 0 / 0.4);
+  }
+
+  /* ── Typography utilities ────────────────────────────────────── */
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Risk color system ───────────────────────────────────────── */
+
+  .risk-low      { color: #16a34a; }
+  .risk-medium   { color: #ca8a04; }
+  .risk-high     { color: #ea580c; }
+  .risk-veryhigh { color: #dc2626; }
+
+  .dark .risk-low      { color: #4ade80; }
+  .dark .risk-medium   { color: #facc15; }
+  .dark .risk-high     { color: #fb923c; }
+  .dark .risk-veryhigh { color: #f87171; }
+
+  /* ── Sidebar animation ───────────────────────────────────────── */
+
+  .sidebar-slide-in {
+    animation: slideInRight 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* ── Skeleton loading ────────────────────────────────────────── */
+
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: rgb(148 163 184 / 0.12);
+    border-radius: 6px;
+  }
+
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.08),
+      transparent
+    );
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+  }
+
+  /* ── Map tooltip ─────────────────────────────────────────────── */
+
+  .maplibregl-popup-content {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .maplibregl-popup-tip {
+    display: none !important;
+  }
+
+  /* ── Scrollbar ───────────────────────────────────────────────── */
+
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: rgb(148 163 184 / 0.2);
+    border-radius: 2px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: rgb(148 163 184 / 0.35);
+  }
+
+  /* ── Misc ────────────────────────────────────────────────────── */
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-slide-in,
+    .skeleton::after {
+      animation: none;
+    }
+  }
+}
