@@ -11,7 +11,7 @@ EpiGuard predicts dengue risk at the departmental level up to 4 weeks ahead, tra
 
 ## Live demo
 
-> Platform deployed on Vercel. Contact the authors for access credentials.
+> Platform deployed on Vercel: https://epiguardapp.vercel.app
 
 ---
 
@@ -22,6 +22,19 @@ EpiGuard predicts dengue risk at the departmental level up to 4 weeks ahead, tra
 | **Risk Map** | Interactive choropleth of Colombia colored by current risk level (Low / Medium / High / Very High). Click any department to see its 4-week forecast and the signed contribution of each climate variable to the prediction. |
 | **On-demand Predictions** | Upload a CSV/JSON/XLSX file with historical weekly case counts, select departments, and invoke the SARIMAX inference pipeline. Results are shown on a map with PDF export. |
 | **Analytics** | Static evaluation dashboard comparing six model families — SARIMA, SARIMAX, Neural Network (MLP), ElasticNet, Random Forest, and XGBoost — on the 2022–2023 held-out test set. |
+
+---
+
+## Screenshots
+
+### Risk Map — national choropleth with department sidebar
+![Map view](docs/screenshots/map-view.png)
+
+### On-demand Predictions — file upload and results
+![Predictions view](docs/screenshots/predictions-view.png)
+
+### Analytics — model comparison dashboard
+![Analytics view](docs/screenshots/analytics-view.png)
 
 ---
 
@@ -106,7 +119,7 @@ Predictions are mapped to four ordinal levels using **department-specific histor
 ## Repository structure
 
 ```
-epiguard-frontend/
+epiguard/
 ├── app/                   # Next.js App Router pages
 │   ├── page.tsx           # Root — switches between the three views
 │   ├── layout.tsx
