@@ -180,7 +180,7 @@ epiguard/
 │   ├── supabase.ts        # Supabase client (lazy singleton)
 │   └── data/
 │       └── departments.ts # Static department metadata (DANE codes, population)
-├── .github/workflows/     # daily-update.yml (cron predictions) + lint-typecheck.yml (CI)
+├── .github/workflows/     # daily-update.yml (daily cron, self keep-alive) + lint-typecheck.yml (CI)
 ├── types/                 # Ambient TS declarations (image modules)
 └── public/
     └── colombia_departamentos.json  # TopoJSON boundary file

@@ -1,21 +1,45 @@
 
 
-# Schedule: 06:00 UTC daily = 01:00 Colombia time.
+# Schedule: 06:23 UTC daily = 01:23 Colombia time.
+#
+# Why an odd minute: GitHub delays or drops scheduled runs during high-load
+# windows, and the start of every hour is the worst one. An off-peak minute
+# keeps the run close to its nominal time.
+#
+# Why the keep-alive step: GitHub disables scheduled workflows in public repos
+# after 60 days without repository activity. Re-enabling the workflow through
+# the API on every run resets that timer, so the cron never silently stops.
 
 name: Daily Predictions Update
 
 on:
   schedule:
     # Cron: minute hour day month day-of-week
-    - cron: "0 6 * * *"
+    - cron: "23 6 * * *"
   workflow_dispatch:
+
+permissions:
+  actions: write
+
+# Never let a delayed run overlap with the next one.
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
 
 jobs:
   refresh-predictions:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # curl: up to 3 attempts x 240s + retry delays; leave headroom.
+    timeout-minutes: 15
 
     steps:
+      - name: Keep scheduled workflow enabled
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PUT \
+            "repos/${{ github.repository }}/actions/workflows/daily-update.yml/enable"
+
       - name: Trigger Supabase daily-update Edge Function
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
