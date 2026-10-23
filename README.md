@@ -165,8 +165,12 @@ Column aliases (`COD_DPTO`, `SEMANA_ISO`, `casos`) are recognized automatically.
 ```
 epiguard/
 ├── app/                   # Next.js App Router pages
-│   ├── page.tsx           # Root — switches between the three views
-│   ├── layout.tsx
+│   ├── page.tsx           # / — Risk map
+│   ├── predictions/       # /predictions — On-demand predictions
+│   ├── analytics/         # /analytics — Model performance
+│   ├── layout.tsx         # Shared navbar, site metadata and JSON-LD
+│   ├── not-found.tsx      # Custom 404 page
+│   ├── robots.ts, sitemap.ts, opengraph-image.tsx, twitter-image.tsx
 │   └── globals.css
 ├── components/
 │   ├── map/               # ColombiaMap, DepartmentSidebar, RiskLegend
@@ -178,12 +182,14 @@ epiguard/
 │   ├── pdfReport.ts       # Multi-page PDF generation (pdfmake)
 │   ├── parseFile.ts       # CSV/JSON/XLSX ingestion and validation
 │   ├── supabase.ts        # Supabase client (lazy singleton)
+│   ├── site.ts, seo.ts, og.tsx  # SEO: per-page titles/descriptions, metadata, JSON-LD, OG images
 │   └── data/
 │       └── departments.ts # Static department metadata (DANE codes, population)
 ├── .github/workflows/     # daily-update.yml (daily cron, self keep-alive) + lint-typecheck.yml (CI)
 ├── types/                 # Ambient TS declarations (image modules)
 └── public/
-    └── colombia_departamentos.json  # TopoJSON boundary file
+    ├── colombia_departamentos.json  # TopoJSON boundary file
+    └── llms.txt                     # Site summary for LLMs (also served at /llm.txt)
 ```
 
 ---

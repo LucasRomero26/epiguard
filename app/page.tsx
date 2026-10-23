@@ -1,24 +1,18 @@
-'use client';
-
-import { useState } from 'react';
-import Navbar from '@/components/Navbar';
 import MapView from '@/components/views/MapView';
-import PredictionsView from '@/components/views/PredictionsView';
-import AnalyticsView from '@/components/views/AnalyticsView';
+import JsonLd from '@/components/JsonLd';
+import { PAGES } from '@/lib/site';
+import { pageJsonLd, pageMetadata } from '@/lib/seo';
 
-type View = 'map' | 'predictions' | 'analytics';
+export const metadata = pageMetadata('map');
 
-export default function HomePage() {
-  const [activeView, setActiveView] = useState<View>('map');
-
+export default function MapPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar activeView={activeView} onViewChange={setActiveView} />
-      <main className="pt-14">
-        {activeView === 'map'         && <MapView />}
-        {activeView === 'predictions' && <PredictionsView />}
-        {activeView === 'analytics'   && <AnalyticsView />}
-      </main>
-    </div>
+    <>
+      <JsonLd data={pageJsonLd('map')} />
+      {/* The map is client-only, so the heading and summary keep the page meaningful in raw HTML */}
+      <h1 className="sr-only">{PAGES.map.heading}</h1>
+      <p className="sr-only">{PAGES.map.description}</p>
+      <MapView />
+    </>
   );
 }

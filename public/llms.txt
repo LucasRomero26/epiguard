@@ -1,0 +1,22 @@
+# EpiGuard
+
+> EpiGuard is an epidemiological early-warning platform for dengue fever in Colombia. It forecasts dengue cases up to 4 weeks ahead for each of Colombia's 32 departments with SARIMAX models and turns the forecasts into categorical risk alerts (Low, Medium, High, Very High) for public-health decision-makers.
+
+The models were trained on SIVIGILA surveillance data (2007–2023), NASA POWER meteorological data (temperature, precipitation, humidity) and the NOAA Oceanic Niño Index (ONI). Risk levels use department-specific historical percentiles: Low (< p50), Medium (p50–p80), High (p80–p95) and Very High (> p95). Bogotá (DANE code 11) is excluded from modeling.
+
+## Pages
+
+- [Dengue Risk Map of Colombia](https://epiguardapp.vercel.app/): Interactive choropleth of the current risk level per department; selecting a department shows its 4-week forecast and the signed contribution of each climate variable.
+- [On-demand Dengue Predictions](https://epiguardapp.vercel.app/predictions): Upload weekly case counts (CSV, JSON or XLSX with columns `dept_code`, `week_iso`, `cases`), choose departments and run SARIMAX inference; results can be exported as a PDF report.
+- [Model Performance Analytics](https://epiguardapp.vercel.app/analytics): Evaluation of SARIMA, SARIMAX, Neural Network (MLP), ElasticNet, Random Forest and XGBoost on the 2022–2023 held-out test set.
+
+## Model results
+
+- SARIMA ranked first by weighted RMSE (25.17); SARIMAX (25.28) is deployed because it attributes each forecast to climate variables.
+- Time-series models outperform tree ensembles on outbreak peaks, which tree models cannot extrapolate beyond the training range.
+- A separate SARIMAX model is trained per department because climate drivers differ locally.
+
+## Optional
+
+- [Source code](https://github.com/LucasRomero26/epiguard): Next.js 15 frontend, Supabase backend and Hugging Face Spaces inference; MIT License.
+- [Sitemap](https://epiguardapp.vercel.app/sitemap.xml)
