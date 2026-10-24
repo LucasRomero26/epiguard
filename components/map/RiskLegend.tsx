@@ -79,22 +79,22 @@ export default function RiskLegend({ selectedDeptCode, compact = false }: RiskLe
     ? {
       container: 'p-3 min-w-[160px]',
       title: 'text-xs font-semibold',
-      subtitle: 'text-[10px] mb-2',
+      subtitle: 'text-xs mb-2',
       rowGap: 'gap-1.5',
       dot: 'w-2.5 h-2.5',
-      label: 'text-[11px] font-medium',
-      range: 'text-[9px]',
-      footnote: 'text-[9px] mt-2 pt-1.5',
+      label: 'text-xs font-medium',
+      range: 'text-xs',
+      footnote: 'text-xs mt-2 pt-1.5',
     }
     : {
       container: 'p-4 min-w-[220px]',
       title: 'text-sm font-semibold',
-      subtitle: 'text-[11px] mb-3',
+      subtitle: 'text-xs mb-3',
       rowGap: 'gap-2',
       dot: 'w-3 h-3',
       label: 'text-xs font-medium',
-      range: 'text-[10px]',
-      footnote: 'text-[10px] mt-3 pt-2',
+      range: 'text-xs',
+      footnote: 'text-xs mt-3 pt-2',
     };
 
   if (thresholds) {
@@ -107,7 +107,7 @@ export default function RiskLegend({ selectedDeptCode, compact = false }: RiskLe
     ];
     return (
       <div className={cn('glass-card rounded-xl', s.container)}>
-        <h3 className={cn('text-foreground', s.title)}>Risk Level</h3>
+        <h2 className={cn('text-foreground', s.title)}>Risk Level</h2>
         <p className={cn('text-muted-foreground', s.subtitle)}>
           {compact ? name : `Thresholds for ${name}`}
         </p>
@@ -136,7 +136,7 @@ export default function RiskLegend({ selectedDeptCode, compact = false }: RiskLe
 
   return (
     <div className={cn('glass-card rounded-xl', s.container)}>
-      <h3 className={cn('text-foreground', s.title)}>Risk Level</h3>
+      <h2 className={cn('text-foreground', s.title)}>Risk Level</h2>
       <p className={cn('text-muted-foreground', s.subtitle)}>
         {loading ? 'Loading…' : 'Per-dept thresholds'}
       </p>

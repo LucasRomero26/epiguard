@@ -167,7 +167,7 @@ export default function AnalyticsView() {
                         <span className="w-2 h-2 rounded-full" style={{ background: MODEL_COLORS[m.model] }} />
                         {m.model}
                         {isProduction && (
-                          <span className="ml-1 text-[10px] uppercase tracking-wider font-bold text-cyan-400 bg-cyan-500/15 px-1.5 py-0.5 rounded">
+                          <span className="ml-1 text-xs uppercase tracking-wider font-bold text-cyan-400 bg-cyan-500/15 px-1.5 py-0.5 rounded">
                             Production
                           </span>
                         )}
@@ -183,7 +183,7 @@ export default function AnalyticsView() {
             </tbody>
           </table>
         </div>
-        <div className="px-6 py-3 border-t border-border text-[11px] text-muted-foreground/80">
+        <div className="px-6 py-3 border-t border-border text-xs text-muted-foreground/80">
           SARIMA ranks first by RMSE, but SARIMAX was selected for production: the marginal 0.46%
           accuracy gap is outweighed by its ability to attribute forecasts to climate variables —
           a capability SARIMA structurally lacks.

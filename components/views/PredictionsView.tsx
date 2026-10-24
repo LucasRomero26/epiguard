@@ -320,7 +320,7 @@ export default function PredictionsView() {
 
           <div className={cn('space-y-3 transition-opacity', step < 0 ? 'opacity-50 pointer-events-none' : '')}>
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm">1. Select Departments</h3>
+              <h2 className="font-semibold text-sm">1. Select Departments</h2>
               <span className="text-xs text-muted-foreground">
                 {selectedCodes.size} of 32 selected
               </span>
@@ -398,7 +398,7 @@ export default function PredictionsView() {
           {step >= 1 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm">2. Upload Data</h3>
+                <h2 className="font-semibold text-sm">2. Upload Data</h2>
                 <button
                   className="text-xs text-cyan-500 hover:underline cursor-pointer"
                   onClick={() => setShowSchema((v) => !v)}
@@ -418,7 +418,7 @@ export default function PredictionsView() {
                       <span className="text-muted-foreground">— {col.desc}</span>
                     </div>
                   ))}
-                  <p className="text-muted-foreground/80 text-[11px] mt-2 pt-2 border-t border-border">
+                  <p className="text-muted-foreground/80 text-xs mt-2 pt-2 border-t border-border">
                     At least 4 rows per department. Max 1000 rows / 10 MB.
                   </p>
                 </div>
@@ -513,7 +513,7 @@ export default function PredictionsView() {
 
           {step >= 2 && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-sm">3. Process</h3>
+              <h2 className="font-semibold text-sm">3. Process</h2>
 
               {processState === 'idle' && (
                 <button

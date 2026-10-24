@@ -1,14 +1,13 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, type RefObject } from 'react';
 import { X } from 'lucide-react';
 import DepartmentSidebar from '@/components/map/DepartmentSidebar';
 import RiskLegend from '@/components/map/RiskLegend';
 import { fetchPredictions } from '@/lib/api';
 import { getDepartmentByCode } from '@/lib/data/departments';
-import type { PredictionResponse } from '@/lib/types';
-import type { Department } from '@/lib/types';
+import type { Department, PredictionResponse, RiskSummary } from '@/lib/types';
 
 function SidebarSkeleton({ deptName, deptCode, onClose }: { deptName: string; deptCode: number; onClose: () => void }) {
   return (
@@ -39,9 +38,46 @@ function SidebarSkeleton({ deptName, deptCode, onClose }: { deptName: string; de
   );
 }
 
-const ColombiaMap = dynamic(() => import('@/components/map/ColombiaMap'), { ssr: false });
+const MapPlaceholder = () => <div className="skeleton h-full w-full" />;
 
-export default function MapView() {
+const ColombiaMap = dynamic(() => import('@/components/map/ColombiaMap'), {
+  ssr: false,
+  loading: MapPlaceholder,
+});
+
+function useDeferredMount(ref: RefObject<Element | null>) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const hasIdle = typeof window.requestIdleCallback === 'function';
+    let handle: number | undefined;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      const mount = () => setReady(true);
+      handle = hasIdle
+        ? window.requestIdleCallback(mount, { timeout: 2000 })
+        : window.setTimeout(mount, 200);
+    });
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      if (handle === undefined) return;
+      if (hasIdle) window.cancelIdleCallback(handle);
+      else window.clearTimeout(handle);
+    };
+  }, [ref]);
+
+  return ready;
+}
+
+export default function MapView({ risks }: { risks: RiskSummary[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapReady = useDeferredMount(containerRef);
   const [selectedCode, setSelectedCode] = useState<number | null>(null);
   const [selectedDept, setSelectedDept] = useState<Department | null>(null);
   const [predictions, setPredictions] = useState<PredictionResponse | null>(null);
@@ -83,13 +119,22 @@ export default function MapView() {
   const sidebarOpen = !!selectedDept;
 
   return (
-    <div className="relative w-full" style={{ height: 'calc(100vh - 56px)' }}>
+    <div
+      id="risk-map"
+      ref={containerRef}
+      className="relative w-full scroll-mt-14 h-[75svh] lg:h-[calc(100vh-56px)]"
+    >
       <div className="absolute inset-0">
-        <ColombiaMap
-          onDepartmentClick={handleDepartmentClick}
-          selectedCode={selectedCode}
-          highlightedCodes={null}
-        />
+        {mapReady ? (
+          <ColombiaMap
+            onDepartmentClick={handleDepartmentClick}
+            selectedCode={selectedCode}
+            highlightedCodes={null}
+            initialRisks={risks}
+          />
+        ) : (
+          <MapPlaceholder />
+        )}
       </div>
 
       {/* Legend shifts left when the sidebar is open */}

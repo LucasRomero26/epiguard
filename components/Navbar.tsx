@@ -42,7 +42,7 @@ export default function Navbar() {
               className={cn(
                 'flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer',
                 pathname === href
-                  ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25'
+                  ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/25'
                   : 'text-muted-foreground hover:text-foreground hover:bg-white/10'
               )}
             >

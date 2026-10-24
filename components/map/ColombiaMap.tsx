@@ -32,6 +32,7 @@ interface ColombiaMapProps {
   selectedCode: number | null;
   highlightedCodes?: Set<number> | null;
   compact?: boolean;
+  initialRisks?: RiskSummary[];
 }
 
 export default function ColombiaMap({
@@ -39,6 +40,7 @@ export default function ColombiaMap({
   selectedCode,
   highlightedCodes = null,
   compact = false,
+  initialRisks = [],
 }: ColombiaMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -51,9 +53,9 @@ export default function ColombiaMap({
 
   const { resolvedTheme } = useTheme();
 
-  // Risks now load asynchronously from Supabase. Stays empty until the
-  // first fetch resolves; the choropleth shows a fallback gray until then.
-  const risks = useRef<RiskSummary[]>([]);
+  // Seeded from server-rendered data when available; otherwise fetched on load.
+  // The choropleth shows a fallback gray until risks are known.
+  const risks = useRef<RiskSummary[]>(initialRisks);
 
   // Stable refs so event handlers inside the init closure always read current props
   const clickRef = useRef(onDepartmentClick);
@@ -225,11 +227,13 @@ export default function ColombiaMap({
     // Initial full load: fetch risk data + build GeoJSON, then add layers.
     // We fetch risks BEFORE building so the first paint already has colors.
     m.on('load', async () => {
-      try {
-        risks.current = await fetchAllRisks();
-      } catch (err) {
-        // Don't break the map if Supabase is unreachable; render gray.
-        console.error('[ColombiaMap] fetchAllRisks failed:', err);
+      if (!risks.current.length) {
+        try {
+          risks.current = await fetchAllRisks();
+        } catch (err) {
+          // Don't break the map if Supabase is unreachable; render gray.
+          console.error('[ColombiaMap] fetchAllRisks failed:', err);
+        }
       }
       await buildGeoJSON();
       addLayersRef.current();

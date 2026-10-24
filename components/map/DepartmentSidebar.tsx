@@ -112,7 +112,7 @@ export default function DepartmentSidebar({ department, predictions, onClose }: 
                 )}>
                   {f.cases.toLocaleString()}
                 </p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Week {f.horizon} forecast</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Week {f.horizon} forecast</p>
               </div>
             ))}
           </div>
