@@ -12,6 +12,7 @@ import RiskLegend from '@/components/map/RiskLegend';
 import { parseAndValidateFile, filterRowsForSelection, type ParseSuccess } from '@/lib/parseFile';
 import type { PredictionResponse, RiskLevel } from '@/lib/types';
 import DepartmentSidebar from '@/components/map/DepartmentSidebar';
+import SidebarSkeleton from '@/components/map/SidebarSkeleton';
 
 const ColombiaMap = dynamic(() => import('@/components/map/ColombiaMap'), { ssr: false });
 
@@ -74,6 +75,8 @@ export default function PredictionsView() {
   // Sidebar within results map
   const [mapSelectedCode, setMapSelectedCode] = useState<number | null>(null);
   const [mapPredictions, setMapPredictions] = useState<PredictionResponse | null>(null);
+  const [mapLoading, setMapLoading] = useState(false);
+  const mapRequestRef = useRef<number | null>(null);
   // Tracks PDF generation so the button can show a busy state
   const [generatingReport, setGeneratingReport] = useState(false);
 
@@ -268,22 +271,28 @@ export default function PredictionsView() {
   };
 
   const handleMapClick = async (code: number) => {
-    if (mapSelectedCode === code) { setMapSelectedCode(null); setMapPredictions(null); return; }
+    if (mapSelectedCode === code) { setMapSelectedCode(null); setMapPredictions(null); setMapLoading(false); mapRequestRef.current = null; return; }
     setMapSelectedCode(code);
+    mapRequestRef.current = code;
 
     // Prefer the on-demand result we just computed (fresher than DB)
     const fromResults = results.find((r) => r.dept_code === code);
     if (fromResults) {
       setMapPredictions(fromResults);
+      setMapLoading(false);
       return;
     }
 
     // Fallback to DB if user clicks a non-selected dept on the map
+    setMapPredictions(null);
+    setMapLoading(true);
     try {
       const data = await fetchPredictions(code);
-      setMapPredictions(data);
+      if (mapRequestRef.current === code) setMapPredictions(data);
     } catch {
-      setMapPredictions(null);
+      if (mapRequestRef.current === code) setMapPredictions(null);
+    } finally {
+      if (mapRequestRef.current === code) setMapLoading(false);
     }
   };
 
@@ -614,11 +623,19 @@ export default function PredictionsView() {
 
             {mapSelectedCode && (
               <div className="absolute right-0 top-0 bottom-0 w-[380px] glass-card border-l border-border overflow-hidden z-10">
-                <DepartmentSidebar
-                  department={getDepartmentByCode(mapSelectedCode)!}
-                  predictions={mapPredictions}
-                  onClose={() => { setMapSelectedCode(null); setMapPredictions(null); }}
-                />
+                {mapLoading ? (
+                  <SidebarSkeleton
+                    deptName={getDepartmentByCode(mapSelectedCode)!.name}
+                    deptCode={mapSelectedCode}
+                    onClose={() => { setMapSelectedCode(null); setMapPredictions(null); setMapLoading(false); mapRequestRef.current = null; }}
+                  />
+                ) : (
+                  <DepartmentSidebar
+                    department={getDepartmentByCode(mapSelectedCode)!}
+                    predictions={mapPredictions}
+                    onClose={() => { setMapSelectedCode(null); setMapPredictions(null); mapRequestRef.current = null; }}
+                  />
+                )}
               </div>
             )}
           </div>

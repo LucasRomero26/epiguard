@@ -1,5 +1,6 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import maplibregl from 'maplibre-gl';
@@ -322,5 +323,17 @@ export default function ColombiaMap({
     }
   }, [selectedCode, layersReady, compact]);
 
-  return <div ref={containerRef} className="w-full h-full" />;
+  return (
+    <div className="relative w-full h-full">
+      <div ref={containerRef} className="w-full h-full" />
+      {!layersReady && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center" role="status">
+          <span className="glass-card flex items-center gap-2 rounded-full px-4 py-2 text-sm text-foreground">
+            <Loader2 size={16} className="animate-spin text-cyan-400" aria-hidden />
+            Loading risk data…
+          </span>
+        </div>
+      )}
+    </div>
+  );
 }
