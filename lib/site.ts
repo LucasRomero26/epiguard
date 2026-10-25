@@ -9,13 +9,17 @@ export const SITE_AUTHOR = 'Lucas Romero';
 
 export type PageKey = 'map' | 'predictions' | 'analytics';
 
-export const PAGES: Record<PageKey, { path: string; title: string; heading: string; description: string }> = {
+export const PAGES: Record<
+  PageKey,
+  { path: string; title: string; heading: string; description: string; lastModified: string }
+> = {
   map: {
     path: '/',
     title: 'Dengue Risk Map of Colombia',
     heading: 'Dengue Risk Map of Colombia',
     description:
       'Interactive map of current dengue risk for each Colombian department, with 4-week case forecasts and the climate factors driving each prediction.',
+    lastModified: '2026-10-24',
   },
   predictions: {
     path: '/predictions',
@@ -23,6 +27,7 @@ export const PAGES: Record<PageKey, { path: string; title: string; heading: stri
     heading: 'On-demand Dengue Predictions',
     description:
       'Upload weekly dengue case counts (CSV, JSON or XLSX), select departments and run SARIMAX forecasts with risk levels and a downloadable PDF report.',
+    lastModified: '2026-10-24',
   },
   analytics: {
     path: '/analytics',
@@ -30,6 +35,7 @@ export const PAGES: Record<PageKey, { path: string; title: string; heading: stri
     heading: 'Model Performance',
     description:
       'Evaluation of SARIMA, SARIMAX, Neural Network, ElasticNet, Random Forest and XGBoost dengue forecasting models on the 2022–2023 held-out test set.',
+    lastModified: '2026-10-24',
   },
 };
 
