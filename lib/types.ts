@@ -127,13 +127,6 @@ export interface ModelMetrics {
   mae: number;
 }
 
-export interface ScatterPoint {
-  actual: number;
-  predicted: number;
-  department: string;
-  deptCode: number;
-}
-
 export interface RmseHorizonGroup {
   horizon: string;
   SARIMA: number;
@@ -144,12 +137,6 @@ export interface RmseHorizonGroup {
   XGBoost: number;
 }
 
-export interface TimeSeriesPoint {
-  week: string;
-  actual: number;
-  predicted: number;
-}
-
 export interface ModelPerformanceData {
   models: ModelMetrics[];
   testPeriod: string;
@@ -157,7 +144,5 @@ export interface ModelPerformanceData {
   weightedRmse: number;
   averageR2: number;
   departmentsCovered: number;
-  scatterData: ScatterPoint[];
   rmseByHorizon: RmseHorizonGroup[];
-  timeSeriesData: Record<number, TimeSeriesPoint[]>;
 }

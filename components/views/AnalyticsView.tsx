@@ -1,15 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import {
-  ScatterChart, Scatter, XAxis, YAxis, Tooltip, ReferenceLine, ResponsiveContainer,
-  BarChart, Bar, Legend, CartesianGrid,
-  LineChart, Line,
-} from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, CartesianGrid } from 'recharts';
 import { ArrowUpDown, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MODEL_PERFORMANCE } from '@/lib/mocks/modelPerformance';
-import { DEPARTMENTS } from '@/lib/data/departments';
+import { MODEL_PERFORMANCE } from '@/lib/data/modelPerformance';
 import type { ModelMetrics } from '@/lib/types';
 
 type SortKey = keyof Pick<ModelMetrics, 'rank' | 'rmse' | 'r2' | 'mae'>;
@@ -48,7 +43,6 @@ const FINDINGS = [
 export default function AnalyticsView() {
   const [sortKey, setSortKey] = useState<SortKey>('rank');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-  const [selectedDeptCode, setSelectedDeptCode] = useState<number>(76);
 
   const sortedModels = useMemo(() => {
     return [...MODEL_PERFORMANCE.models].sort((a, b) => {
@@ -62,9 +56,6 @@ export default function AnalyticsView() {
     else { setSortKey(key); setSortDir('asc'); }
   };
   const setDir = () => setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-
-  const seriesData = MODEL_PERFORMANCE.timeSeriesData[selectedDeptCode] ?? [];
-  const availableDepts = DEPARTMENTS.filter(d => MODEL_PERFORMANCE.timeSeriesData[d.code]);
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
@@ -190,86 +181,21 @@ export default function AnalyticsView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
-        <div className="glass-card rounded-2xl p-6">
-          <h2 className="font-semibold text-foreground mb-4">Predictions vs Reality (Test Set, t+1)</h2>
-          <ResponsiveContainer width="100%" height={280}>
-            <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis
-                type="number" dataKey="actual" name="Actual"
-                label={{ value: 'Actual Cases', position: 'insideBottom', offset: -10, fill: '#94a3b8', fontSize: 11 }}
-                tick={{ fill: '#94a3b8', fontSize: 10 }} tickLine={false}
-              />
-              <YAxis
-                type="number" dataKey="predicted" name="Predicted"
-                label={{ value: 'Predicted Cases', angle: -90, position: 'insideLeft', fill: '#94a3b8', fontSize: 11 }}
-                tick={{ fill: '#94a3b8', fontSize: 10 }} tickLine={false}
-              />
-              <Tooltip
-                cursor={{ strokeDasharray: '3 3' }}
-                contentStyle={{ background: 'rgba(10,14,26,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }}
-                formatter={(v) => [v, '']}
-                labelFormatter={() => ''}
-              />
-              <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 400, y: 400 }]} stroke="#22d3ee" strokeDasharray="5 5" strokeOpacity={0.5} />
-              <Scatter
-                data={MODEL_PERFORMANCE.scatterData}
-                fill="#22d3ee"
-                fillOpacity={0.7}
-                r={3}
-              />
-            </ScatterChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="glass-card rounded-2xl p-6">
-          <h2 className="font-semibold text-foreground mb-4">RMSE Degradation by Forecast Horizon</h2>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={MODEL_PERFORMANCE.rmseByHorizon} margin={{ top: 10, right: 20, bottom: 20, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-              <XAxis dataKey="horizon" tick={{ fill: '#94a3b8', fontSize: 11 }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{ background: 'rgba(10,14,26,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }}
-              />
-              <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
-              {Object.entries(MODEL_COLORS).map(([model, color]) => (
-                <Bar key={model} dataKey={model} fill={color} radius={[2, 2, 0, 0]} maxBarSize={18} />
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
       <div className="glass-card rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-foreground">Actual vs Predicted Cases (Test Period)</h2>
-          <select
-            value={selectedDeptCode}
-            onChange={e => setSelectedDeptCode(Number(e.target.value))}
-            className="px-3 py-1.5 rounded-lg bg-background/60 border border-border text-sm text-foreground cursor-pointer"
-          >
-            {availableDepts.map(d => (
-              <option key={d.code} value={d.code}>{d.name}</option>
-            ))}
-          </select>
-        </div>
-        <ResponsiveContainer width="100%" height={260}>
-          <LineChart data={seriesData} margin={{ top: 10, right: 20, bottom: 20, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-            <XAxis
-              dataKey="week" tick={{ fill: '#94a3b8', fontSize: 9 }} tickLine={false}
-              interval={Math.floor(seriesData.length / 6)}
-            />
+        <h2 className="font-semibold text-foreground mb-4">RMSE Degradation by Forecast Horizon</h2>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={MODEL_PERFORMANCE.rmseByHorizon} margin={{ top: 10, right: 20, bottom: 20, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+            <XAxis dataKey="horizon" tick={{ fill: '#94a3b8', fontSize: 11 }} tickLine={false} axisLine={false} />
             <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} tickLine={false} axisLine={false} />
             <Tooltip
               contentStyle={{ background: 'rgba(10,14,26,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }}
             />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
-            <Line type="monotone" dataKey="actual" stroke="#22d3ee" strokeWidth={2} dot={false} name="Actual" />
-            <Line type="monotone" dataKey="predicted" stroke="#f97316" strokeWidth={1.5} strokeDasharray="4 2" dot={false} name="Predicted" />
-          </LineChart>
+            <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
+            {Object.entries(MODEL_COLORS).map(([model, color]) => (
+              <Bar key={model} dataKey={model} fill={color} radius={[2, 2, 0, 0]} maxBarSize={18} />
+            ))}
+          </BarChart>
         </ResponsiveContainer>
       </div>
 
